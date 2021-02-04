@@ -1,0 +1,18 @@
+# This config file is read when we call `bundle_crate_assets()` in `build.rs`
+
+# Bundle assets even for debug builds
+bundle-for-debug-builds = true # Default: false
+
+# Obfuscate assets. This doesn't protect from reverse-engineering, but it makes it a little harder
+# for the average user to read them.
+obfuscate = true # Default: false
+
+# Compress the asset bundle using Bzip2 compression. Other options are "deflate" and "none".
+compression = "bzip2" # Default: "bzip2"
+
+# The name of the file, not counting the exention, which will be different based on the `obfuscate`
+# setting. Obfuscated bundles will end in `.bin` and non-obfuscated bundles will end in `.zip`.
+file-name = "assets" # Default: "assets"
+
+# Set the directory that asset bundle should be placed.
+out-dir = "../target" # Default "./target"

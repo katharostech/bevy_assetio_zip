@@ -1,14 +1,14 @@
 use bevy::prelude::*;
-use bevy_advanced_assets::{AdvancedAssetIoConfig, AdvancedAssetIoPlugin};
+use bevy_assetio_zip::{AssetIoZipConfig, AssetIoZipPlugin};
 
 fn main() {
     App::build()
         // Config must be inserted before adding plugins
-        .insert_resource(AdvancedAssetIoConfig::default())
+        .insert_resource(AssetIoZipConfig::default())
         // Add the default plugins
         .add_plugins_with(DefaultPlugins, |group| {
             // With our additinoal asset IO plugin
-            group.add_before::<bevy::asset::AssetPlugin, _>(AdvancedAssetIoPlugin)
+            group.add_before::<bevy::asset::AssetPlugin, _>(AssetIoZipPlugin)
         })
         .add_startup_system(setup.system())
         .run();

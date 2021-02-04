@@ -1,18 +1,41 @@
-use std::{fs::File, io::BufWriter, path::Path};
+//! Asset bundler meant for use by the [`bevy_assetio_zip`] crate. See [`bevy_assetio_zip`] for usage.
+//!
+//! [`bevy_assetio_zip`]: https://docs.rs/bevy_assetio_zip
+//!
+//! # License
+//!
+//! This crate is licensed under the [Katharos License][k_license] which places certain
+//! restrictions on what you are allowed to use it for. Please read and understand the terms before
+//! using this crate for your project.
+//!
+//! [k_license]: https://github.com/katharostech/katharos-license
 
+#[cfg(feature = "bundle-crate-assets")]
+use std::path::PathBuf;
+use std::{
+    fs::File,
+    io::{BufWriter, Read, Seek, Write},
+    path::Path,
+};
+
+#[cfg(feature = "bundle-crate-assets")]
 use serde::Deserialize;
 use walkdir::WalkDir;
-use zip::{write::FileOptions, CompressionMethod, ZipWriter};
+use xorio::Xor;
+pub use zip::CompressionMethod;
+use zip::{write::FileOptions, ZipWriter};
 
-include!("src/xor.rs");
-
+/// Compression mode to use for asset bundle
+#[cfg(feature = "bundle-crate-assets")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
 enum Compression {
     None,
     Bzip2,
     Deflate,
 }
 
+#[cfg(feature = "bundle-crate-assets")]
 impl Into<CompressionMethod> for Compression {
     fn into(self) -> CompressionMethod {
         match self {
@@ -23,6 +46,8 @@ impl Into<CompressionMethod> for Compression {
     }
 }
 
+/// Configuration options for the `asset_config.toml` file
+#[cfg(feature = "bundle-crate-assets")]
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(default)]
@@ -32,8 +57,10 @@ struct AssetBundlerConfig {
     compression: Compression,
     obfuscate: bool,
     bundle_for_debug_builds: bool,
+    out_dir: String,
 }
 
+#[cfg(feature = "bundle-crate-assets")]
 impl Default for AssetBundlerConfig {
     fn default() -> Self {
         Self {
@@ -41,32 +68,57 @@ impl Default for AssetBundlerConfig {
             compression: Compression::Bzip2,
             obfuscate: false,
             bundle_for_debug_builds: false,
+            out_dir: "./target".into(),
         }
     }
 }
 
-const CONFIG_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/asset_config.toml");
+/// Automatically bundle the assets from this crate's `assets` dir and parse the bundler config from
+/// the optional `asset_config.toml` file.
+///
+/// This function is meant to be used in your crates `build.rs` file.
+#[cfg(feature = "bundle-crate-assets")]
+pub fn bundle_crate_assets() {
+    let cargo_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+    let config_path = PathBuf::from(cargo_dir.clone()).join("asset_config.toml");
 
-fn main() {
     // Load bundler config file
-    let config: AssetBundlerConfig = std::fs::read(CONFIG_PATH)
+    let config: AssetBundlerConfig = std::fs::read(config_path)
         .and_then(
             |x| Ok(toml::from_slice(x.as_slice()).expect("Could not parse asset_config.toml")),
         )
         .unwrap_or_default();
 
-    let file_extension = if config.obfuscate { "bin" } else { "zip" };
     let profile = std::env::var("PROFILE").unwrap();
+    let file_extension = if config.obfuscate { "bin" } else { "zip" };
+    let asset_dir = PathBuf::from(cargo_dir).join("assets");
+    let bundle_file = format!("{}/{}.{}", config.out_dir, config.file_name, file_extension).into();
+    std::fs::create_dir_all(config.out_dir).unwrap();
 
     if profile == "release" || config.bundle_for_debug_builds == true {
-        // Bundle assets
-        zip_dir(
-            &concat!(env!("CARGO_MANIFEST_DIR"), "/assets").into(),
-            &format!("target/{}/{}.{}", profile, config.file_name, file_extension),
-            config.compression.into(),
+        bundle_assets(
+            asset_dir,
+            bundle_file,
             config.obfuscate,
+            config.compression.into(),
         );
     }
+}
+
+/// Bundle the assets in the given `asset_dir` and write the result to `bundle_file`.
+pub fn bundle_assets<P: AsRef<Path>>(
+    asset_dir: P,
+    bundle_file: P,
+    obfuscate: bool,
+    compression: CompressionMethod,
+) {
+    // Bundle assets
+    zip_dir(
+        asset_dir.as_ref(),
+        bundle_file.as_ref(),
+        compression.into(),
+        obfuscate,
+    );
 }
 
 trait WriteSeek: Seek + Write {}
@@ -82,7 +134,7 @@ fn zip_dir<P: AsRef<Path>>(
     let walkdir = WalkDir::new(source_dir);
     let archive_file = File::create(target_file.as_ref()).expect("Could not create archive file");
     let writer: Box<dyn WriteSeek> = if obfuscate {
-        Box::new(Xor(archive_file))
+        Box::new(Xor::new(archive_file))
     } else {
         Box::new(archive_file)
     };

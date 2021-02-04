@@ -1,0 +1,20 @@
+[package]
+name = "bevy_assetio_zip_bundler"
+version = "0.1.0"
+authors = ["Zicklag <zicklag@katharostech.com>"]
+edition = "2018"
+
+[features]
+default = ["bundle-crate-assets"]
+bundle-crate-assets = [
+    "serde",
+    "toml"
+]
+
+[dependencies]
+zip = "0.5.9"
+walkdir = "2.3.1"
+xorio = { path = "../../xorio" }
+
+serde = { version = "1.0", features = ["derive"], optional = true }
+toml = { version = "0.5.8", optional = true }

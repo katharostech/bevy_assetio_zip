@@ -1,0 +1,16 @@
+[package]
+name = "bevy_assetio_zip"
+version = "0.1.0"
+authors = ["Zicklag <zicklag@katharostech.com>"]
+edition = "2018"
+
+[features]
+default = []
+
+[dependencies]
+bevy = "0.4"
+zip = "0.5.9"
+xorio = { path = "../../xorio" }
+
+[build-dependencies]
+bevy_assetio_zip_bundler = { path = "../bevy_assetio_zip_bundler" }
