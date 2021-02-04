@@ -3,6 +3,17 @@ name = "bevy_assetio_zip"
 version = "0.1.0"
 authors = ["Zicklag <zicklag@katharostech.com>"]
 edition = "2018"
+license-file = "LICENSE.md"
+
+description = "Bevy AssetIO plugin that can load assets from optionally obfuscated zip files"
+repository = "https://github.com/katharostech/bevy_assetio_zip"
+documentation = "https://docs.rs/bevy_assetio_zip"
+keywords = ["asset", "bevy", "io", "zip"]
+categories = [
+    "cryptography",
+    "encoding",
+    "game-development"
+]
 
 [features]
 default = []
@@ -15,4 +26,4 @@ zip = "0.5.9"
 xorio = "0.1.0"
 
 [build-dependencies]
-bevy_assetio_zip_bundler = { path = "../bevy_assetio_zip_bundler" }
+bevy_assetio_zip_bundler = { version = "0.1.0", path = "../bevy_assetio_zip_bundler" }

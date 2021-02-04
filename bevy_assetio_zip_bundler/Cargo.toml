@@ -3,6 +3,17 @@ name = "bevy_assetio_zip_bundler"
 version = "0.1.0"
 authors = ["Zicklag <zicklag@katharostech.com>"]
 edition = "2018"
+license-file = "LICENSE.md"
+
+description = "An asset bundler for the bevy_assetio_zip crate"
+repository = "https://github.com/katharostech/bevy_assetio_zip"
+documentation = "https://docs.rs/bevy_assetio_zip"
+keywords = ["asset", "bevy", "io", "zip"]
+categories = [
+    "cryptography",
+    "encoding",
+    "game-development"
+]
 
 [features]
 default = ["bundle-crate-assets"]
