@@ -3,7 +3,3 @@ members = [
     "bevy_assetio_zip",
     "bevy_assetio_zip_bundler"
 ]
-
-
-[patch.crates-io]
-bevy = { path = "../../other/bevy" }
