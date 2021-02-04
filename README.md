@@ -18,9 +18,9 @@ files.
 ```rust
 App::build()
     // Any config must be inserted before adding plugins. This is optional.
-    .insert_resource(AssetIoZipConfig {
+    .add_resource(AssetIoZipConfig {
         // The name of the asset bundle file, excluding the extension, to load
-        file_name: "assets".into() # This is the default
+        file_name: "assets".into(), // This is the default
     })
     // Add the default plugins
     .add_plugins_with(DefaultPlugins, |group| {
@@ -59,8 +59,12 @@ fn main() {
 ```
 
 This will automatically zip up your crate's `assets` folder and put it in your `target/` dir
-when compiling release builds. You can configure the name, obfuscation, and compression of the
-bundle by creating and `asset_config.toml` file next to your `Cargo.toml` file:
+when compiling release builds. When distributing your application simply take your asset bundle
+and place it adjacent to the executable and Bevy will attempt to load assets from the bundle
+before falling back to the `assets` dir.
+
+You can configure the name, obfuscation, and compression of the bundle by creating and
+`asset_config.toml` file next to your `Cargo.toml` file:
 
 ```toml
 # Bundle assets even for debug builds
@@ -87,6 +91,34 @@ function.
 
 [`bevy_assetio_zip_bundler::bundle_assets`]:
 https://docs.rs/bevy_assetio_zip_bundler/latest/bevy_assetio_zip_bundler/fn.bundle_assets.html
+
+## Bevy Versions
+
+Supported bevy versions per plugin version:
+
+| Bevy Version | Plugin Version                                     |
+| ------------ | -------------------------------------------------- |
+| 0.4          | 0.1                                                |
+| master       | 0.1 with the `bevy-unstable` feature ( see below ) |
+
+### Using Bevy From Master
+
+You can use this crate with Bevy master by adding a patch to your `Cargo.toml` and by adding the
+`bevy-unstable` feature to this crate:
+
+```toml
+[dependencies]
+# Bevy version must be set to "0.4" and we will
+# override it in the patch below.
+bevy = "0.4"
+bevy_assetio_zip = { version = "0.1", features = ["bevy-unstable"] }
+
+[patch.crates-io]
+bevy = { git = "https://github.com/bevyengine/bevy.git" }
+```
+
+Note that as Bevy master may or may not introduce breaking API changes, this crate may or may
+not compile when using the `bevy-unstable` feature.
 
 ## License
 

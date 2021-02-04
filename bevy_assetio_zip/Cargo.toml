@@ -6,6 +6,8 @@ edition = "2018"
 
 [features]
 default = []
+# Attempt to support the latest Bevy version from master
+bevy-unstable = []
 
 [dependencies]
 bevy = "0.4"
