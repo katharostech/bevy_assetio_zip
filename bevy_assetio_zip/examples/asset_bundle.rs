@@ -6,9 +6,13 @@ fn main() {
 
     // Config must be inserted before adding plugins
     #[cfg(feature = "bevy-unstable")]
-    builder.insert_resource(AssetIoZipConfig::default());
+    builder.insert_resource(AssetIoZipConfig {
+        file_name: "assets".into(), // The default
+    });
     #[cfg(not(feature = "bevy-unstable"))]
-    builder.add_resource(AssetIoZipConfig::default());
+    builder.add_resource(AssetIoZipConfig {
+        file_name: "assets".into(), // The default
+    });
 
     // Add the default plugins
     builder
