@@ -14,7 +14,7 @@ bundle-crate-assets = [
 [dependencies]
 zip = "0.5.9"
 walkdir = "2.3.1"
-xorio = { path = "../../xorio" }
+xorio = "0.1.0"
 
 serde = { version = "1.0", features = ["derive"], optional = true }
 toml = { version = "0.5.8", optional = true }

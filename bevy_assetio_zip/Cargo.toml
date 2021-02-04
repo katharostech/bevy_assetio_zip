@@ -10,7 +10,7 @@ default = []
 [dependencies]
 bevy = "0.4"
 zip = "0.5.9"
-xorio = { path = "../../xorio" }
+xorio = "0.1.0"
 
 [build-dependencies]
 bevy_assetio_zip_bundler = { path = "../bevy_assetio_zip_bundler" }
